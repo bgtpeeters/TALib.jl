@@ -3,6 +3,7 @@
 [![CI](https://github.com/bgtpeeters/TALib.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/bgtpeeters/TALib.jl/actions/workflows/ci.yml)
 [![Julia 1.6+](https://img.shields.io/badge/Julia-1.6%2B-blue)](https://julialang.org)
 [![License: BSD-2-Clause](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](LICENSE)
+[![Contributing](https://img.shields.io/badge/contributions-welcome-brightgreen)](CONTRIBUTING.md)
 
 A Julia wrapper around the [TA-Lib](https://ta-lib.org/) technical analysis C
 library. Bindings are implemented via Julia's built-in `ccall` — no code
@@ -171,3 +172,9 @@ BSD 2-Clause — see [LICENSE](LICENSE).
 This package is an independent wrapper and is not affiliated with or endorsed
 by the TA-Lib project. TA-Lib itself is also distributed under the
 [BSD license](https://github.com/TA-Lib/ta-lib/blob/main/LICENSE).
+
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for
+guidelines on how to add indicators, run the tests, and submit a pull request.
+See [CHANGELOG.md](CHANGELOG.md) for a history of changes.
