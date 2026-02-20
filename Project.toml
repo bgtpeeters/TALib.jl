@@ -1,0 +1,13 @@
+name = "TALib"
+uuid = "7c9b5b4b-8c1c-4b2e-9e4a-3f1d2c5e6f7a"
+version = "0.1.0"
+authors = []
+
+[compat]
+julia = "1.6"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
