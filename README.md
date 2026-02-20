@@ -102,7 +102,7 @@ the initial "lookback" bars where there is insufficient data):
 | Function | Output length | First output aligns with input index |
 |---|---|---|
 | `wma(prices, p)` | `n - p + 1` | `p` (1-based) |
-| `adx(hlc, p)` | `n - 2*(p-1)` | `2*p - 1` (1-based) |
+| `adx(hlc, p)` | `n - (2*p - 1)` | `2*p` (1-based) |
 | `minus_di(hlc, p)` | `n - p` | `p + 1` (1-based) |
 | `plus_di(hlc, p)` | `n - p` | `p + 1` (1-based) |
 

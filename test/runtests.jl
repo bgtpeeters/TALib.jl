@@ -64,8 +64,8 @@ const PERIOD = 5
     # Must produce some output
     @test length(result) > 0
 
-    # ADX lookback = 2*(period-1); output length = n - 2*(period-1)
-    expected_len = length(CLOSE) - 2 * (PERIOD - 1)
+    # ADX lookback = 2*period - 1; output length = n - (2*period - 1)
+    expected_len = length(CLOSE) - (2 * PERIOD - 1)
     @test length(result) == expected_len
 
     # ADX is defined in [0, 100]
