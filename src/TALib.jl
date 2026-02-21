@@ -63,6 +63,17 @@ function _check_ret(rc::Cint, fname::String)
 end
 
 # ---------------------------------------------------------------------------
+# Internal helper: pad the result with NaN values for the lookback period.
+# This ensures that the output array has the same length as the input data.
+# ---------------------------------------------------------------------------
+function _pad_result(out::Vector{Cdouble}, outNBElem::Ref{Cint}, n::Int)
+    result = Vector{Float64}(undef, n)
+    fill!(result, NaN)
+    result[(n - outNBElem[] + 1):end] = out[1:outNBElem[]]
+    return result
+end
+
+# ---------------------------------------------------------------------------
 # Indicator implementations
 # ---------------------------------------------------------------------------
 include("indicators/wma.jl")

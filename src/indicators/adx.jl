@@ -17,10 +17,9 @@ trend. ADX does not indicate trend direction — use [`plus_di`](@ref) and
 - `period::Int`: number of bars (2–100000).
 
 # Returns
-A `Vector{Float64}` of length `length(close) - 2*(period-1)`.
-The ADX requires two successive smoothing passes, so the lookback is
-`2 * (period - 1)`. An empty vector is returned when there is insufficient
-data.
+A `Vector{Float64}` of length `length(close)`.
+The first `2*(period-1)` elements are `NaN` due to the lookback period.
+The remaining elements correspond to the ADX values.
 
 # Example
 ```julia
@@ -56,5 +55,5 @@ function adx(
     )::Cint
 
     _check_ret(rc, "TA_ADX")
-    return out[1:outNBElem[]]
+    return _pad_result(out, outNBElem, n)
 end

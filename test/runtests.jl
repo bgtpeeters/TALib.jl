@@ -24,26 +24,34 @@ dot(a, b) = sum(a .* b)
 
     result = wma(prices, period)
 
-    # Output length: n - period + 1
-    @test length(result) == length(prices) - period + 1
+    # Output length matches input length
+    @test length(result) == length(prices)
+
+    # Lookback period is filled with NaN
+    @test all(isnan.(result[1:period-1]))
 
     # Each output value matches the reference calculation
     for i in eachindex(result)
-        window = prices[i:i+period-1]
-        expected = wma_ref(window, period)
-        @test result[i] ≈ expected atol=1e-10
+        if i >= period
+            window = prices[i-period+1:i]
+            expected = wma_ref(window, period)
+            @test result[i] ≈ expected atol=1e-10
+        end
     end
 
-    # Monotonically increasing for a linearly rising input
-    @test all(diff(result) .> 0)
+    # Monotonically increasing for a linearly rising input (non-NaN values)
+    @test all(diff(result[period:end]) .> 0)
 
-    # Insufficient data → empty result, no error
-    @test wma([1.0, 2.0], 5) == Float64[]
+    # Insufficient data → all NaN, no error
+    r = wma([1.0, 2.0], 5)
+    @test length(r) == 2
+    @test all(isnan.(r))
 
     # Single-element result (period == length)
     r = wma([1.0, 2.0, 3.0], 3)
-    @test length(r) == 1
-    @test r[1] ≈ wma_ref([1.0, 2.0, 3.0], 3) atol=1e-10
+    @test length(r) == 3
+    @test isnan(r[1]) && isnan(r[2])
+    @test r[3] ≈ wma_ref([1.0, 2.0, 3.0], 3) atol=1e-10
 end
 
 # ---------------------------------------------------------------------------
@@ -61,18 +69,20 @@ const PERIOD = 5
 @testset "ADX" begin
     result = adx(HIGH, LOW, CLOSE, PERIOD)
 
-    # Must produce some output
-    @test length(result) > 0
+    # Output length matches input length
+    @test length(result) == length(CLOSE)
 
-    # ADX lookback = 2*period - 1; output length = n - (2*period - 1)
-    expected_len = length(CLOSE) - (2 * PERIOD - 1)
-    @test length(result) == expected_len
+    # Lookback period is filled with NaN
+    lookback = 2 * PERIOD - 1
+    @test all(isnan.(result[1:lookback]))
 
-    # ADX is defined in [0, 100]
-    @test all(0.0 .<= result .<= 100.0)
+    # ADX is defined in [0, 100] for non-NaN values
+    @test all(0.0 .<= result[lookback+1:end] .<= 100.0)
 
-    # Insufficient data → empty, no error
-    @test adx(HIGH[1:3], LOW[1:3], CLOSE[1:3], PERIOD) == Float64[]
+    # Insufficient data → all NaN, no error
+    r = adx(HIGH[1:3], LOW[1:3], CLOSE[1:3], PERIOD)
+    @test length(r) == 3
+    @test all(isnan.(r))
 end
 
 # ---------------------------------------------------------------------------
@@ -81,16 +91,19 @@ end
 @testset "MINUS_DI" begin
     result = minus_di(HIGH, LOW, CLOSE, PERIOD)
 
-    @test length(result) > 0
+    # Output length matches input length
+    @test length(result) == length(CLOSE)
 
-    # Lookback for MINUS_DI = period; output length = n - period
-    @test length(result) == length(CLOSE) - PERIOD
+    # Lookback period is filled with NaN
+    @test all(isnan.(result[1:PERIOD]))
 
-    # -DI is defined in [0, 100]
-    @test all(0.0 .<= result .<= 100.0)
+    # -DI is defined in [0, 100] for non-NaN values
+    @test all(0.0 .<= result[PERIOD+1:end] .<= 100.0)
 
-    # Insufficient data → empty, no error
-    @test minus_di(HIGH[1:2], LOW[1:2], CLOSE[1:2], PERIOD) == Float64[]
+    # Insufficient data → all NaN, no error
+    r = minus_di(HIGH[1:2], LOW[1:2], CLOSE[1:2], PERIOD)
+    @test length(r) == 2
+    @test all(isnan.(r))
 end
 
 # ---------------------------------------------------------------------------
@@ -99,16 +112,19 @@ end
 @testset "PLUS_DI" begin
     result = plus_di(HIGH, LOW, CLOSE, PERIOD)
 
-    @test length(result) > 0
+    # Output length matches input length
+    @test length(result) == length(CLOSE)
 
-    # Lookback for PLUS_DI = period; output length = n - period
-    @test length(result) == length(CLOSE) - PERIOD
+    # Lookback period is filled with NaN
+    @test all(isnan.(result[1:PERIOD]))
 
-    # +DI is defined in [0, 100]
-    @test all(0.0 .<= result .<= 100.0)
+    # +DI is defined in [0, 100] for non-NaN values
+    @test all(0.0 .<= result[PERIOD+1:end] .<= 100.0)
 
-    # Insufficient data → empty, no error
-    @test plus_di(HIGH[1:2], LOW[1:2], CLOSE[1:2], PERIOD) == Float64[]
+    # Insufficient data → all NaN, no error
+    r = plus_di(HIGH[1:2], LOW[1:2], CLOSE[1:2], PERIOD)
+    @test length(r) == 2
+    @test all(isnan.(r))
 end
 
 # ---------------------------------------------------------------------------
@@ -120,12 +136,14 @@ end
     minus_di_r = minus_di(HIGH, LOW, CLOSE, PERIOD)
     plus_di_r  = plus_di(HIGH, LOW, CLOSE, PERIOD)
 
-    # All three produce output
-    @test length(adx_r)      > 0
-    @test length(minus_di_r) > 0
-    @test length(plus_di_r)  > 0
+    # All three produce output with the same length as input
+    @test length(adx_r) == length(CLOSE)
+    @test length(minus_di_r) == length(CLOSE)
+    @test length(plus_di_r) == length(CLOSE)
 
-    # ADX has a longer lookback than +DI / -DI, so it is strictly shorter
-    @test length(adx_r) < length(minus_di_r)
-    @test length(minus_di_r) == length(plus_di_r)
+    # ADX has a longer lookback than +DI / -DI, so it has more NaN values
+    adx_nan_count = sum(isnan.(adx_r))
+    di_nan_count = sum(isnan.(minus_di_r))
+    @test adx_nan_count > di_nan_count
+    @test sum(isnan.(plus_di_r)) == di_nan_count
 end

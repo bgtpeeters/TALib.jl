@@ -16,9 +16,9 @@ compute the [`adx`](@ref).
 - `period::Int`: number of bars (2–100000).
 
 # Returns
-A `Vector{Float64}` of length `length(close) - period`.
-Values are in the range [0, 100].
-An empty vector is returned when there is insufficient data.
+A `Vector{Float64}` of length `length(close)`.
+The first `period` elements are `NaN` due to the lookback period.
+The remaining elements correspond to the -DI values, in the range [0, 100].
 
 # Example
 ```julia
@@ -54,5 +54,5 @@ function minus_di(
     )::Cint
 
     _check_ret(rc, "TA_MINUS_DI")
-    return out[1:outNBElem[]]
+    return _pad_result(out, outNBElem, n)
 end

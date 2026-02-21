@@ -13,9 +13,9 @@ are `1, 2, …, n` (normalised so they sum to 1).
 - `period::Int`: number of bars (2–100000).
 
 # Returns
-A `Vector{Float64}` of length `length(prices) - period + 1`.
-The first element corresponds to input index `period` (1-based).
-An empty vector is returned when `period > length(prices)`.
+A `Vector{Float64}` of length `length(prices)`.
+The first `period - 1` elements are `NaN` due to the lookback period.
+The remaining elements correspond to the WMA values.
 
 # Example
 ```julia
@@ -42,5 +42,5 @@ function wma(prices::AbstractVector{Float64}, period::Int)::Vector{Float64}
     )::Cint
 
     _check_ret(rc, "TA_WMA")
-    return out[1:outNBElem[]]
+    return _pad_result(out, outNBElem, n)
 end
