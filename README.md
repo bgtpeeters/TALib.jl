@@ -15,9 +15,18 @@ the C library directly.
 | Julia function | TA-Lib function | Description | Inputs |
 |---|---|---|---|
 | `wma(prices, period)` | `TA_WMA` | Weighted Moving Average | price series |
+| `sma(prices, period)` | `TA_SMA` | Simple Moving Average | price series |
+| `ema(prices, period)` | `TA_EMA` | Exponential Moving Average | price series |
+| `rsi(prices, period)` | `TA_RSI` | Relative Strength Index | price series |
+| `roc(prices, period)` | `TA_ROC` | Rate of Change | price series |
+| `atr(high, low, close, period)` | `TA_ATR` | Average True Range | H, L, C |
+| `dx(high, low, close, period)` | `TA_DX` | Directional Movement Index | H, L, C |
 | `adx(high, low, close, period)` | `TA_ADX` | Average Directional Movement Index | H, L, C |
 | `minus_di(high, low, close, period)` | `TA_MINUS_DI` | Minus Directional Indicator (−DI) | H, L, C |
 | `plus_di(high, low, close, period)` | `TA_PLUS_DI` | Plus Directional Indicator (+DI) | H, L, C |
+| `macd(prices, fast, slow, signal)` | `TA_MACD` | Moving Average Convergence Divergence | price series |
+| `bbands(prices, period, dev_up, dev_dn, ma_type)` | `TA_BBANDS` | Bollinger Bands | price series |
+| `stoch(high, low, close, fastk, slowk, slowk_ma, slowd, slowd_ma)` | `TA_STOCH` | Stochastic Oscillator | H, L, C |
 
 ## Prerequisites
 
@@ -78,11 +87,27 @@ using TALib
 
 # --- Weighted Moving Average ---
 prices = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
-result = wma(prices, 3)
-# result has length(prices) - period + 1 = 8 elements
-# result[1] corresponds to prices[3], result[end] to prices[end]
+wma_result = wma(prices, 3)
 
-# --- Directional indicators (ADX, ±DI) ---
+# --- Simple Moving Average ---
+sma_result = sma(prices, 3)
+
+# --- Exponential Moving Average ---
+ema_result = ema(prices, 3)
+
+# --- Relative Strength Index ---
+rsi_result = rsi(prices, 5)
+
+# --- Rate of Change ---
+roc_result = roc(prices, 2)
+
+# --- Moving Average Convergence Divergence ---
+macd_line, macd_signal, macd_hist = macd(prices, 12, 26, 9)
+
+# --- Bollinger Bands ---
+upper_band, middle_band, lower_band = bbands(prices, 20, 2.0, 2.0, 0)
+
+# --- Directional indicators (ADX, ±DI, DX) ---
 high  = [10.0, 11.0, 12.0, 13.0, 12.0, 11.0, 12.0, 13.0, 14.0, 13.0,
          12.0, 13.0, 14.0, 15.0, 14.0, 13.0, 14.0, 15.0, 16.0, 15.0]
 low   = [ 9.0, 10.0, 11.0, 12.0, 11.0, 10.0, 11.0, 12.0, 13.0, 12.0,
@@ -90,9 +115,14 @@ low   = [ 9.0, 10.0, 11.0, 12.0, 11.0, 10.0, 11.0, 12.0, 13.0, 12.0,
 close = [ 9.5, 10.5, 11.5, 12.5, 11.5, 10.5, 11.5, 12.5, 13.5, 12.5,
          11.5, 12.5, 13.5, 14.5, 13.5, 12.5, 13.5, 14.5, 15.5, 14.5]
 
-adx_vals      = adx(high, low, close, 5)      # trend strength [0, 100]
-minus_di_vals = minus_di(high, low, close, 5) # downward pressure [0, 100]
-plus_di_vals  = plus_di(high, low, close, 5)  # upward pressure  [0, 100]
+atr_result      = atr(high, low, close, 5)      # volatility measure
+dx_result       = dx(high, low, close, 5)       # trend strength [0, 100]
+adx_vals        = adx(high, low, close, 5)      # trend strength [0, 100]
+minus_di_vals    = minus_di(high, low, close, 5) # downward pressure [0, 100]
+plus_di_vals     = plus_di(high, low, close, 5)  # upward pressure  [0, 100]
+
+# --- Stochastic Oscillator ---
+slowk, slowd = stoch(high, low, close, 5, 3, 0, 3, 0)
 ```
 
 ### Output length and alignment
@@ -103,9 +133,18 @@ the initial "lookback" bars where there is insufficient data):
 | Function | Output length | First output aligns with input index |
 |---|---|---|
 | `wma(prices, p)` | `n - p + 1` | `p` (1-based) |
+| `sma(prices, p)` | `n - p + 1` | `p` (1-based) |
+| `ema(prices, p)` | `n - p + 1` | `p` (1-based) |
+| `rsi(prices, p)` | `n - p` | `p + 1` (1-based) |
+| `roc(prices, p)` | `n - p` | `p + 1` (1-based) |
+| `atr(hlc, p)` | `n - p` | `p + 1` (1-based) |
+| `dx(hlc, p)` | `n - (2*p - 2)` | `2*p - 1` (1-based) |
 | `adx(hlc, p)` | `n - (2*p - 1)` | `2*p` (1-based) |
 | `minus_di(hlc, p)` | `n - p` | `p + 1` (1-based) |
 | `plus_di(hlc, p)` | `n - p` | `p + 1` (1-based) |
+| `macd(prices, f, s, sig)` | `n - (s + sig - 1)` | `s + sig` (1-based) |
+| `bbands(prices, p, *, *, *)` | `n - p + 1` | `p` (1-based) |
+| `stoch(hlc, fk, sk, *, sd, *)` | `n - (fk + sk + sd - 2)` | `fk + sk + sd - 1` (1-based) |
 
 When there is insufficient data for even one output value, an empty
 `Vector{Float64}` is returned — no error is thrown.

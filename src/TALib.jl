@@ -20,14 +20,29 @@ The library must be installed on the system before this package can be used.
     using TALib
 
     prices = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
-    result = wma(prices, 3)
+    wma_result = wma(prices, 3)
+    sma_result = sma(prices, 3)
+    ema_result = ema(prices, 3)
+    rsi_result = rsi(prices, 5)
+    roc_result = roc(prices, 2)
+
+    # MACD returns (macd_line, signal_line, histogram)
+    macd_line, macd_signal, macd_hist = macd(prices, 12, 26, 9)
+
+    # BBANDS returns (upper_band, middle_band, lower_band)
+    upper_band, middle_band, lower_band = bbands(prices, 20, 2.0, 2.0, 0)
 
     high  = [10.0, 11.0, 12.0, 11.0, 10.0, 11.0, 12.0, 13.0, 12.0, 11.0]
     low   = [ 9.0, 10.0, 11.0, 10.0,  9.0, 10.0, 11.0, 12.0, 11.0, 10.0]
     close = [ 9.5, 10.5, 11.5, 10.5,  9.5, 10.5, 11.5, 12.5, 11.5, 10.5]
+    atr_result      = atr(high, low, close, 3)
+    dx_result       = dx(high, low, close, 3)
     adx_result      = adx(high, low, close, 3)
     minus_di_result = minus_di(high, low, close, 3)
     plus_di_result  = plus_di(high, low, close, 3)
+
+    # STOCH returns (slowk, slowd)
+    slowk, slowd = stoch(high, low, close, 5, 3, 0, 3, 0)
 """
 module TALib
 
@@ -77,6 +92,15 @@ end
 # Indicator implementations
 # ---------------------------------------------------------------------------
 include("indicators/wma.jl")
+include("indicators/sma.jl")
+include("indicators/ema.jl")
+include("indicators/rsi.jl")
+include("indicators/roc.jl")
+include("indicators/atr.jl")
+include("indicators/dx.jl")
+include("indicators/macd.jl")
+include("indicators/bbands.jl")
+include("indicators/stoch.jl")
 include("indicators/adx.jl")
 include("indicators/minus_di.jl")
 include("indicators/plus_di.jl")
@@ -84,6 +108,6 @@ include("indicators/plus_di.jl")
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
-export wma, adx, minus_di, plus_di
+export wma, sma, ema, rsi, roc, atr, dx, macd, bbands, stoch, adx, minus_di, plus_di
 
 end # module TALib
