@@ -3,7 +3,7 @@
 [![CI](https://github.com/bgtpeeters/TALib.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/bgtpeeters/TALib.jl/actions/workflows/ci.yml)
 [![Julia 1.6+](https://img.shields.io/badge/Julia-1.6%2B-blue)](https://julialang.org)
 [![License: BSD-2-Clause](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](LICENSE)
-[![Contributing](https://img.shields.io/badge/contributions-welcome-brightgreen)](CONTRIBUTING.md)
+
 
 A Julia wrapper around the [TA-Lib](https://ta-lib.org/) technical analysis C
 library. Bindings are implemented via Julia's built-in `ccall` — no code
@@ -214,6 +214,8 @@ by the TA-Lib project. TA-Lib itself is also distributed under the
 
 ## Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for
-guidelines on how to add indicators, run the tests, and submit a pull request.
+While direct code contributions are not accepted, suggestions for improvements and bug reports are welcome! Please use the GitHub issue tracker to:
+- Report bugs using the [Bug Report](https://github.com/bgtpeeters/TALib.jl/issues/new?template=bug_report.md) template
+- Suggest features using the [Feature Request](https://github.com/bgtpeeters/TALib.jl/issues/new?template=feature_request.md) template
+
 See [CHANGELOG.md](CHANGELOG.md) for a history of changes.

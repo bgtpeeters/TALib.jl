@@ -20,11 +20,7 @@ If this is about adding a new indicator, please list the TA-Lib function name(s)
 
 Explain the use case. How would you use this in practice?
 
-## Are you willing to contribute a PR?
 
-- [ ] Yes, I can implement this myself
-- [ ] I can help with testing / review
-- [ ] No, I am just making a suggestion
 
 ## Additional context
 
